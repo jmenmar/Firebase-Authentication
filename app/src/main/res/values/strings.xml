@@ -1,0 +1,12 @@
+<resources>
+    // GLOBAL
+    <string name="app_name">Firebase Authentication</string>
+
+    // LOGIN
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="login">Login</string>
+    <string name="sign_up">Sign up</string>
+    <string name="sign_out">Sign out</string>
+    <string name="create_account">Create account</string>
+</resources>

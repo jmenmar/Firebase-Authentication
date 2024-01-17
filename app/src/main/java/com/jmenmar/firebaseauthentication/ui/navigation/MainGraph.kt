@@ -15,6 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -25,6 +26,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.jmenmar.firebaseauthentication.ui.screens.navigation.home.HomeScreen
 import com.jmenmar.firebaseauthentication.ui.screens.navigation.settings.SettingsScreen
+import com.jmenmar.firebaseauthentication.ui.screens.navigation.settings.SettingsViewModel
 
 @Composable
 fun MainGraph(navController: NavHostController, innerPadding: PaddingValues) {
@@ -40,7 +42,17 @@ fun MainGraph(navController: NavHostController, innerPadding: PaddingValues) {
         }
 
         composable(route = BottomBar.Settings.route) {
-            SettingsScreen(innerPadding = innerPadding)
+            val settingsViewModel: SettingsViewModel = hiltViewModel()
+
+            SettingsScreen(
+                innerPadding = innerPadding,
+                settingsViewModel = settingsViewModel,
+                navigateToLogin = {
+                    navController.navigateUp()
+                    navController.popBackStack()
+                    navController.navigate(AuthScreen.Login.route)
+                }
+            )
         }
     }
 }

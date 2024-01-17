@@ -20,18 +20,26 @@ fun NavGraphBuilder.loginGraph(navController: NavHostController) {
 
             LoginScreen(
                 loginViewModel = loginViewModel,
-                onClickLogin = {
+                navigateToHome = {
                     navController.popBackStack()
                     navController.navigate(Graph.MAIN)
                 },
-                onClickSignUp = { navController.navigate(AuthScreen.SignUp.route) }
+                onClickSignUp = {
+                    navController.navigate(AuthScreen.SignUp.route)
+                }
             )
         }
 
         composable(route = AuthScreen.SignUp.route) {
             val signUpViewModel: SignUpViewModel = hiltViewModel()
 
-            SignUpScreen(signUpViewModel = signUpViewModel)
+            SignUpScreen(
+                signUpViewModel = signUpViewModel,
+                navigateToHome = {
+                    navController.popBackStack()
+                    navController.navigate(Graph.MAIN)
+                }
+            )
         }
     }
 }

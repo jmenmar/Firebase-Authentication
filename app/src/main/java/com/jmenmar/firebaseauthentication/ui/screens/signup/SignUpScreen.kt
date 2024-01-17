@@ -21,13 +21,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 import com.jmenmar.firebaseauthentication.R
-import com.jmenmar.firebaseauthentication.ui.navigation.Graph
 
 @Composable
 fun SignUpScreen(
-    signUpViewModel: SignUpViewModel
+    signUpViewModel: SignUpViewModel,
+    navigateToHome: () -> Unit
 ) {
     val loading = signUpViewModel.loading.collectAsState()
     val email = signUpViewModel.email.collectAsState()
@@ -40,11 +39,11 @@ fun SignUpScreen(
         if (loading.value) {
             CircularProgressIndicator()
         } else {
-            Text(text = "Create new account")
+            Text(text = stringResource(id = R.string.create_account))
             Spacer(modifier = Modifier.height(16.dp))
             OutlinedTextField(
                 value = email.value,
-                label = { Text(text = stringResource(R.string.username)) },
+                label = { Text(text = stringResource(R.string.email)) },
                 maxLines = 1,
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
@@ -62,7 +61,11 @@ fun SignUpScreen(
             Spacer(modifier = Modifier.height(16.dp))
             Button(
                 enabled = email.value.isNotEmpty() && password.value.isNotEmpty() &&  Patterns.EMAIL_ADDRESS.matcher(email.value).matches(),
-                onClick = { },
+                onClick = {
+                    signUpViewModel.signUp {
+                        navigateToHome()
+                    }
+                },
                 shape = RoundedCornerShape(12.dp),
                 modifier = Modifier
                     .fillMaxWidth()

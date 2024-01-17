@@ -1,13 +1,25 @@
 package com.jmenmar.firebaseauthentication.ui.screens.login
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavHostController
+import com.jmenmar.firebaseauthentication.R
+import com.jmenmar.firebaseauthentication.data.network.AuthService
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
-class LoginViewModel @Inject constructor() : ViewModel() {
+class LoginViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
+    private val authService: AuthService
+) : ViewModel() {
     private val _loading = MutableStateFlow(false)
     val loading = _loading.asStateFlow()
 
@@ -26,5 +38,30 @@ class LoginViewModel @Inject constructor() : ViewModel() {
 
     fun setPassword(pass: String) {
         _password.value = pass
+    }
+
+    fun isUserLogged(): Boolean {
+        return authService.isUserLogged()
+    }
+
+    fun login(navigateToHome: () -> Unit) {
+        viewModelScope.launch {
+            _loading.value = true
+
+            try {
+                _error.value = ""
+                val result = withContext(Dispatchers.IO) {
+                    authService.login(email.value, password.value)
+                }
+
+                if (result != null) {
+                    navigateToHome()
+                }
+            } catch (e: Exception) {
+                _error.value = context.getString(R.string.incorrect_email_password)
+            }
+
+            _loading.value = false
+        }
     }
 }

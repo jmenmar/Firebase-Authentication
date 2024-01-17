@@ -18,6 +18,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,7 +41,7 @@ import com.jmenmar.firebaseauthentication.R
 @Composable
 fun LoginScreen(
     loginViewModel: LoginViewModel,
-    onClickLogin: () -> Unit,
+    navigateToHome: () -> Unit,
     onClickSignUp: () -> Unit
 ) {
     val loading = loginViewModel.loading.collectAsState()
@@ -66,7 +67,7 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(64.dp))
             OutlinedTextField(
                 value = email.value,
-                label = { Text(text = stringResource(R.string.username)) },
+                label = { Text(text = stringResource(R.string.email)) },
                 maxLines = 1,
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
@@ -96,7 +97,11 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(16.dp))
             Button(
                 enabled = email.value.isNotEmpty() && password.value.isNotEmpty() && Patterns.EMAIL_ADDRESS.matcher(email.value).matches(),
-                onClick = { onClickLogin() },
+                onClick = {
+                    loginViewModel.login {
+                        navigateToHome()
+                    }
+                },
                 shape = RoundedCornerShape(12.dp),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -107,6 +112,12 @@ fun LoginScreen(
             }
             TextButton(onClick = { onClickSignUp() }) {
                 Text(text = stringResource(R.string.create_account))
+            }
+        }
+
+        LaunchedEffect(key1 = Unit) {
+            if (loginViewModel.isUserLogged()) {
+                navigateToHome()
             }
         }
     }

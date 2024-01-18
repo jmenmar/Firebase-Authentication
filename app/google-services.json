@@ -12,7 +12,20 @@
           "package_name": "com.jmenmar.firebaseauthentication"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "802785118139-21h15g445gt8bdpose58tsisdoj11hbn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jmenmar.firebaseauthentication",
+            "certificate_hash": "56a131641de2934982e53dd88a1722bff0cc53dd"
+          }
+        },
+        {
+          "client_id": "802785118139-7glf067cc0lg19ho3h6ojind5bc39rtr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBR802YO2B1CfjdSNewtN-LD11w74EclM8"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "802785118139-7glf067cc0lg19ho3h6ojind5bc39rtr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

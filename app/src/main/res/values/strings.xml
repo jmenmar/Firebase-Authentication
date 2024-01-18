@@ -1,6 +1,7 @@
 <resources>
     // GLOBAL
     <string name="app_name">Firebase Authentication</string>
+    <string name="default_web_client_id">802785118139-7glf067cc0lg19ho3h6ojind5bc39rtr.apps.googleusercontent.com</string>
 
     // LOGIN
     <string name="email">Email</string>
@@ -10,4 +11,5 @@
     <string name="sign_out">Sign out</string>
     <string name="create_account">Create account</string>
     <string name="incorrect_email_password">Incorrect email or password</string>
+    <string name="sign_in_successful">"Sign in successful"</string>
 </resources>

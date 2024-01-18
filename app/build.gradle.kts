@@ -94,4 +94,5 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     // authentication
     implementation("com.google.firebase:firebase-auth-ktx:22.3.0")
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
 }

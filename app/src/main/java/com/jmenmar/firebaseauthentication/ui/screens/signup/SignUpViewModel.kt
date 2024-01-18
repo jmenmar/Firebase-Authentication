@@ -1,5 +1,6 @@
 package com.jmenmar.firebaseauthentication.ui.screens.signup
 
+import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jmenmar.firebaseauthentication.data.network.AuthService
@@ -25,6 +26,12 @@ class SignUpViewModel @Inject constructor(
     private val _password = MutableStateFlow("")
     val password = _password.asStateFlow()
 
+    private val _repeatPassword = MutableStateFlow("")
+    val repeatPassword = _repeatPassword.asStateFlow()
+
+    private val _error = MutableStateFlow("")
+    val error = _error.asStateFlow()
+
     fun setEmail(username: String) {
         _email.value = username
     }
@@ -33,8 +40,24 @@ class SignUpViewModel @Inject constructor(
         _password.value = pass
     }
 
+    fun setRepeatPassword(pass: String) {
+        _repeatPassword.value = pass
+    }
+
+    fun isValidForm(): Boolean {
+        return email.value.isNotEmpty() &&
+                password.value.isNotEmpty() &&
+                Patterns.EMAIL_ADDRESS.matcher(email.value).matches() &&
+                passwordsMatch()
+    }
+
+    fun passwordsMatch(): Boolean {
+        return password.value == repeatPassword.value
+    }
+
     fun signUp(navigateToHome:() -> Unit) {
         viewModelScope.launch {
+            _error.value = ""
             _loading.value = true
 
             try {
@@ -47,7 +70,7 @@ class SignUpViewModel @Inject constructor(
                 }
 
             } catch (e: Exception) {
-
+                _error.value = e.message.orEmpty()
             }
 
             _loading.value = false

@@ -42,11 +42,8 @@ fun MainGraph(navController: NavHostController, innerPadding: PaddingValues) {
         }
 
         composable(route = BottomBar.Settings.route) {
-            val settingsViewModel: SettingsViewModel = hiltViewModel()
-
             SettingsScreen(
                 innerPadding = innerPadding,
-                settingsViewModel = settingsViewModel,
                 navigateToLogin = {
                     navController.navigateUp()
                     navController.popBackStack()

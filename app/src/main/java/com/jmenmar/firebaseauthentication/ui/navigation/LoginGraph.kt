@@ -16,10 +16,7 @@ fun NavGraphBuilder.loginGraph(navController: NavHostController) {
         startDestination = AuthScreen.Login.route
     ) {
         composable(route = AuthScreen.Login.route) {
-            val loginViewModel: LoginViewModel = hiltViewModel()
-
             LoginScreen(
-                loginViewModel = loginViewModel,
                 navigateToHome = {
                     navController.popBackStack()
                     navController.navigate(Graph.MAIN)
@@ -31,10 +28,7 @@ fun NavGraphBuilder.loginGraph(navController: NavHostController) {
         }
 
         composable(route = AuthScreen.SignUp.route) {
-            val signUpViewModel: SignUpViewModel = hiltViewModel()
-
             SignUpScreen(
-                signUpViewModel = signUpViewModel,
                 navigateToHome = {
                     navController.popBackStack()
                     navController.navigate(Graph.MAIN)

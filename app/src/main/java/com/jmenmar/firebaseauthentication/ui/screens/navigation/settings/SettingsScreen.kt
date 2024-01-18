@@ -12,16 +12,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.jmenmar.firebaseauthentication.R
 
 @Composable
 fun SettingsScreen(
     innerPadding: PaddingValues,
-    settingsViewModel: SettingsViewModel,
+    settingsViewModel: SettingsViewModel = hiltViewModel(),
     navigateToLogin: () -> Unit
 ) {
     Box(
-        modifier = Modifier.fillMaxSize().padding(innerPadding)
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(innerPadding)
     ) {
         Text(
             modifier = Modifier.align(Alignment.Center),

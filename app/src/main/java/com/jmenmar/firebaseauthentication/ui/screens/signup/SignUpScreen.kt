@@ -1,6 +1,5 @@
 package com.jmenmar.firebaseauthentication.ui.screens.signup
 
-import android.util.Patterns
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,20 +16,25 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.jmenmar.firebaseauthentication.R
 
 @Composable
 fun SignUpScreen(
-    signUpViewModel: SignUpViewModel,
+    signUpViewModel: SignUpViewModel = hiltViewModel(),
     navigateToHome: () -> Unit
 ) {
     val loading = signUpViewModel.loading.collectAsState()
     val email = signUpViewModel.email.collectAsState()
     val password = signUpViewModel.password.collectAsState()
+    val repeatPassword = signUpViewModel.repeatPassword.collectAsState()
+    val error = signUpViewModel.error.collectAsState()
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -58,9 +62,22 @@ fun SignUpScreen(
                 visualTransformation = PasswordVisualTransformation(),
                 onValueChange = { signUpViewModel.setPassword(it) },
             )
+            Spacer(modifier = Modifier.height(4.dp))
+            OutlinedTextField(
+                value = repeatPassword.value,
+                label = { Text(text = stringResource(R.string.password)) },
+                maxLines = 1,
+                singleLine = true,
+                isError = !signUpViewModel.passwordsMatch(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                visualTransformation = PasswordVisualTransformation(),
+                onValueChange = { signUpViewModel.setRepeatPassword(it) },
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(text = error.value, color = Color.Red, fontStyle = FontStyle.Italic)
             Spacer(modifier = Modifier.height(16.dp))
             Button(
-                enabled = email.value.isNotEmpty() && password.value.isNotEmpty() &&  Patterns.EMAIL_ADDRESS.matcher(email.value).matches(),
+                enabled = signUpViewModel.isValidForm(),
                 onClick = {
                     signUpViewModel.signUp {
                         navigateToHome()

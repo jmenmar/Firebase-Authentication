@@ -1,4 +1,4 @@
-package com.jmenmar.firebaseauthentication.ui.navigation
+package com.jmenmar.firebaseauthentication.navigation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home

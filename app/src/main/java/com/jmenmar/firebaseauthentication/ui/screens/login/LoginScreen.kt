@@ -1,6 +1,5 @@
 package com.jmenmar.firebaseauthentication.ui.screens.login
 
-import android.util.Patterns
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -23,7 +22,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,11 +30,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -47,8 +43,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.firebase.auth.GoogleAuthProvider
 import com.jmenmar.firebaseauthentication.R
-import com.jmenmar.firebaseauthentication.data.network.AuthManager
-import com.jmenmar.firebaseauthentication.data.network.AuthRepo
 import com.jmenmar.firebaseauthentication.domain.model.AuthResponse
 import com.jmenmar.firebaseauthentication.ui.screens.login.components.SignInGoogleButton
 import kotlinx.coroutines.launch
@@ -56,8 +50,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun LoginScreen(
     loginViewModel: LoginViewModel = hiltViewModel(),
-    auth: AuthRepo,
     navigateToHome: () -> Unit,
+    navigateToForgot: () -> Unit,
     onClickSignUp: () -> Unit
 ) {
     val loading = loginViewModel.loading.collectAsState()
@@ -68,6 +62,13 @@ fun LoginScreen(
     var passwordVisibility by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
+    val auth = loginViewModel.instance
+
+//    LaunchedEffect(key1 = Unit) {
+//        if (loginViewModel.isUserLogged()) {
+//            navigateToHome()
+//        }
+//    }
 
     val googleSignInLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()) { result ->
@@ -92,28 +93,36 @@ fun LoginScreen(
     }
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().padding(16.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         if (loading.value) {
             CircularProgressIndicator()
         } else {
+            Spacer(modifier = Modifier.weight(1f))
+
             Text(
                 text = stringResource(R.string.app_name),
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold
             )
+
             Spacer(modifier = Modifier.height(64.dp))
+
             OutlinedTextField(
+                modifier = Modifier.fillMaxWidth(),
                 value = email.value,
                 label = { Text(text = stringResource(R.string.email)) },
                 maxLines = 1,
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                 onValueChange = { loginViewModel.setEmail(it) })
+
             Spacer(modifier = Modifier.height(4.dp))
+
             OutlinedTextField(
+                modifier = Modifier.fillMaxWidth(),
                 value = password.value,
                 label = { Text(text = stringResource(R.string.password)) },
                 maxLines = 1,
@@ -132,45 +141,53 @@ fun LoginScreen(
                     }
                 }
             )
+
+            TextButton(
+                modifier = Modifier.align(Alignment.End),
+                onClick = { navigateToForgot() }
+            ) {
+                Text(text = stringResource(R.string.forgot_password))
+            }
+
             Spacer(modifier = Modifier.height(8.dp))
-            Text(text = error.value, color = Color.Red, fontStyle = FontStyle.Italic)
-            Spacer(modifier = Modifier.height(16.dp))
+
             Button(
-                enabled = email.value.isNotEmpty() && password.value.isNotEmpty() && Patterns.EMAIL_ADDRESS.matcher(email.value).matches(),
+                enabled = loginViewModel.isValidForm(),
                 onClick = {
                     loginViewModel.login {
                         navigateToHome()
                     }
                 },
                 shape = RoundedCornerShape(12.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp)
-                    .padding(horizontal = 16.dp)
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Text(text = stringResource(R.string.login))
             }
-            Spacer(modifier = Modifier.height(8.dp))
+
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Divider()
-                Text(text = stringResource(id = R.string.or).uppercase())
-                Divider()
+                Divider(modifier = Modifier.weight(1f))
+                Text(
+                    text = stringResource(id = R.string.or).uppercase(),
+                    fontSize = 12.sp
+                )
+                Divider(modifier = Modifier.weight(1f))
             }
+
             SignInGoogleButton(onClick = { auth.signInWithGoogle(googleSignInLauncher) })
 
             Spacer(modifier = Modifier.weight(1f))
-            TextButton(onClick = { onClickSignUp() }) {
-                Text(text = stringResource(R.string.create_account))
+            
+            Row (verticalAlignment = Alignment.CenterVertically) {
+                Text(text = stringResource(id = R.string.dont_have_account))
+                TextButton(onClick = { onClickSignUp() }) {
+                    Text(text = stringResource(R.string.sign_up))
+                }
             }
-        }
 
-        LaunchedEffect(key1 = Unit) {
-            if (loginViewModel.isUserLogged()) {
-                navigateToHome()
-            }
         }
     }
 }

@@ -1,6 +1,5 @@
-package com.jmenmar.firebaseauthentication.ui.navigation
+package com.jmenmar.firebaseauthentication.navigation
 
-import android.content.Context
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.size
@@ -24,19 +23,17 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.jmenmar.firebaseauthentication.data.network.AuthManager
-import com.jmenmar.firebaseauthentication.data.network.AuthRepo
 import com.jmenmar.firebaseauthentication.ui.screens.navigation.home.HomeScreen
 import com.jmenmar.firebaseauthentication.ui.screens.navigation.settings.SettingsScreen
 
 @Composable
-fun MainGraph(navController: NavHostController, innerPadding: PaddingValues, context: Context, auth: AuthRepo) {
+fun MainGraph(navController: NavHostController, innerPadding: PaddingValues) {
     NavHost(
         navController = navController,
         route = Graph.MAIN,
         startDestination = BottomBar.Home.route
     ) {
-        loginGraph(navController = navController, context = context, auth = auth)
+        loginGraph(navController = navController)
 
         composable(route = BottomBar.Home.route) {
             HomeScreen(innerPadding = innerPadding)
@@ -56,11 +53,11 @@ fun MainGraph(navController: NavHostController, innerPadding: PaddingValues, con
 }
 
 @Composable
-fun MainScreen(navController: NavHostController = rememberNavController(), context: Context, auth: AuthRepo) {
+fun MainScreen(navController: NavHostController = rememberNavController()) {
     Scaffold(
         bottomBar = { BottomBar(navController = navController) }
     ) { innerPadding ->
-        MainGraph(navController = navController, innerPadding = innerPadding, context = context, auth = auth)
+        MainGraph(navController = navController, innerPadding = innerPadding)
     }
 }
 

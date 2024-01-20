@@ -16,7 +16,7 @@ object AppModule {
 //    @Provides
 //    fun provideFirebaseService(reference: DatabaseReference) = FirebaseMarketService(reference)
 
-    //AuthRepositoryImpl
+    //AuthRepositoryImpl & AuthRepo
     @Singleton
     @Provides
     fun provideFirebaseAuth() = FirebaseAuth.getInstance()

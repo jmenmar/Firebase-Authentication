@@ -18,30 +18,42 @@ import com.google.firebase.ktx.Firebase
 import com.jmenmar.firebaseauthentication.R
 import com.jmenmar.firebaseauthentication.domain.model.AuthResponse
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
+import javax.inject.Singleton
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 class AuthRepo @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
-    private val auth: FirebaseAuth by lazy { Firebase.auth }
+    private val firebaseAuth: FirebaseAuth by lazy { Firebase.auth }
 
     private val signInClient = Identity.getSignInClient(context)
 
-    suspend fun signInAnonymously(): AuthResponse<FirebaseUser> {
-        return try {
-            val result = auth.signInAnonymously().await()
-            AuthResponse.Success(result.user ?: throw Exception("Error al iniciar sesión"))
-        } catch(e: Exception) {
-            AuthResponse.Error(e.message ?: "Error al iniciar sesión")
+    // EMAIL & PASSWORD (Mio)
+    suspend fun login(email: String, password: String): FirebaseUser? {
+        return firebaseAuth.signInWithEmailAndPassword(email, password).await().user
+    }
+
+    suspend fun signUp(email: String, password: String): FirebaseUser? {
+        return suspendCancellableCoroutine { cancellableContinuation ->
+            firebaseAuth.createUserWithEmailAndPassword(email, password)
+                .addOnSuccessListener {
+                    val user = it.user
+                    cancellableContinuation.resume(user)
+                }
+                .addOnFailureListener {
+                    cancellableContinuation.resumeWithException(it)
+                }
         }
     }
 
-
-
+    // EMAIL & PASSWORD
     suspend fun createUserWithEmailAndPassword(email: String, password: String): AuthResponse<FirebaseUser?> {
         return try {
-            val authResult = auth.createUserWithEmailAndPassword(email, password).await()
+            val authResult = firebaseAuth.createUserWithEmailAndPassword(email, password).await()
             AuthResponse.Success(authResult.user)
         } catch(e: Exception) {
             AuthResponse.Error(e.message ?: "Error al crear el usuario")
@@ -50,7 +62,7 @@ class AuthRepo @Inject constructor(
 
     suspend fun signInWithEmailAndPassword(email: String, password: String): AuthResponse<FirebaseUser?> {
         return try {
-            val authResult = auth.signInWithEmailAndPassword(email, password).await()
+            val authResult = firebaseAuth.signInWithEmailAndPassword(email, password).await()
             AuthResponse.Success(authResult.user)
         } catch(e: Exception) {
             AuthResponse.Error(e.message ?: "Error al iniciar sesión")
@@ -59,7 +71,7 @@ class AuthRepo @Inject constructor(
 
     suspend fun resetPassword(email: String): AuthResponse<Unit> {
         return try {
-            auth.sendPasswordResetEmail(email).await()
+            firebaseAuth.sendPasswordResetEmail(email).await()
             AuthResponse.Success(Unit)
         } catch(e: Exception) {
             AuthResponse.Error(e.message ?: "Error al restablecer la contraseña")
@@ -67,14 +79,17 @@ class AuthRepo @Inject constructor(
     }
 
     fun signOut() {
-        auth.signOut()
+        firebaseAuth.signOut()
         signInClient.signOut()
     }
 
     fun getCurrentUser(): FirebaseUser?{
-        return auth.currentUser
+        return firebaseAuth.currentUser
     }
 
+    val isUserAuthenticated: Boolean = firebaseAuth.currentUser != null
+
+    // GOOGLE SIGN IN
     private val googleSignInClient: GoogleSignInClient by lazy {
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(context.getString(R.string.default_web_client_id))
@@ -94,7 +109,7 @@ class AuthRepo @Inject constructor(
 
     suspend fun signInWithGoogleCredential(credential: AuthCredential): AuthResponse<FirebaseUser>? {
         return try {
-            val firebaseUser = auth.signInWithCredential(credential).await()
+            val firebaseUser = firebaseAuth.signInWithCredential(credential).await()
             firebaseUser.user?.let {
                 AuthResponse.Success(it)
             } ?: throw Exception("Sign in with Google failed.")
@@ -107,17 +122,4 @@ class AuthRepo @Inject constructor(
         val signInIntent = googleSignInClient.signInIntent
         googleSignInLauncher.launch(signInIntent)
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

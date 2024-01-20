@@ -3,6 +3,7 @@ package com.jmenmar.firebaseauthentication.ui.screens.signup
 import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.jmenmar.firebaseauthentication.data.network.AuthRepo
 import com.jmenmar.firebaseauthentication.data.network.AuthRepositoryImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -14,7 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
-    private val authRepositoryImpl: AuthRepositoryImpl
+    private val authRepositoryImpl: AuthRepo
 ): ViewModel() {
 
     private val _loading = MutableStateFlow(false)

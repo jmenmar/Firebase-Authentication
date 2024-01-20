@@ -1,8 +1,10 @@
 package com.jmenmar.firebaseauthentication.ui.screens.login.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
@@ -30,10 +32,11 @@ fun SignInGoogleButton(
             ),
             contentDescription = null
         )
+
+        Spacer(modifier = Modifier.width(12.dp))
+
         Text(
-            text = stringResource(id = R.string.sign_in_google),
-            modifier = Modifier.padding(12.dp),
-            fontSize = 18.sp
+            text = stringResource(id = R.string.sign_in_google)
         )
     }
 }

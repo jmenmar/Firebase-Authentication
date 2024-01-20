@@ -11,7 +11,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val authRepositoryImpl: AuthRepositoryImpl,
     private val authRepo: AuthRepo
 ) : ViewModel() {
 

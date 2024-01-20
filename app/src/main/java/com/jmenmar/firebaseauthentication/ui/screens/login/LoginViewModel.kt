@@ -1,6 +1,7 @@
 package com.jmenmar.firebaseauthentication.ui.screens.login
 
 import android.content.Context
+import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jmenmar.firebaseauthentication.R
@@ -18,7 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val authRepositoryImpl: AuthRepositoryImpl
+    private val authRepositoryImpl: AuthRepo
 ) : ViewModel() {
     private val _loading = MutableStateFlow(false)
     val loading = _loading.asStateFlow()
@@ -32,6 +33,8 @@ class LoginViewModel @Inject constructor(
     private val _password = MutableStateFlow("")
     val password = _password.asStateFlow()
 
+    val instance = authRepositoryImpl
+
     fun setEmail(email: String) {
         _email.value = email
     }
@@ -40,8 +43,10 @@ class LoginViewModel @Inject constructor(
         _password.value = pass
     }
 
-    fun isUserLogged(): Boolean {
-        return authRepositoryImpl.isUserAuthenticated
+    fun isValidForm(): Boolean {
+        return email.value.isNotEmpty() &&
+                password.value.isNotEmpty() &&
+                Patterns.EMAIL_ADDRESS.matcher(email.value).matches()
     }
 
     fun login(navigateToHome: () -> Unit) {

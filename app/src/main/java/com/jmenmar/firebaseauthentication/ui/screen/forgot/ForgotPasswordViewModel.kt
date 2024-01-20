@@ -1,4 +1,4 @@
-package com.jmenmar.firebaseauthentication.ui.screens.forgot
+package com.jmenmar.firebaseauthentication.ui.screen.forgot
 
 import android.content.Context
 import android.widget.Toast

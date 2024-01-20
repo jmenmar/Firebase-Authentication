@@ -4,9 +4,9 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
-import com.jmenmar.firebaseauthentication.ui.screens.forgot.ForgotPasswordScreen
-import com.jmenmar.firebaseauthentication.ui.screens.login.LoginScreen
-import com.jmenmar.firebaseauthentication.ui.screens.signup.SignUpScreen
+import com.jmenmar.firebaseauthentication.ui.screen.forgot.ForgotPasswordScreen
+import com.jmenmar.firebaseauthentication.ui.screen.login.LoginScreen
+import com.jmenmar.firebaseauthentication.ui.screen.signup.SignUpScreen
 
 fun NavGraphBuilder.loginGraph(navController: NavHostController) {
     navigation(

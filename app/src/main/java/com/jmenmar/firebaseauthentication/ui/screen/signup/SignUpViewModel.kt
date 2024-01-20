@@ -1,4 +1,4 @@
-package com.jmenmar.firebaseauthentication.ui.screens.signup
+package com.jmenmar.firebaseauthentication.ui.screen.signup
 
 import android.util.Patterns
 import androidx.lifecycle.ViewModel

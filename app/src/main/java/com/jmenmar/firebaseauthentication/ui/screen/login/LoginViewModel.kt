@@ -1,11 +1,15 @@
-package com.jmenmar.firebaseauthentication.ui.screens.login
+package com.jmenmar.firebaseauthentication.ui.screen.login
 
 import android.content.Context
 import android.util.Patterns
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jmenmar.firebaseauthentication.R
 import com.jmenmar.firebaseauthentication.data.network.AuthRepositoryImpl
+import com.jmenmar.firebaseauthentication.domain.model.MessageBarState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -20,11 +24,11 @@ class LoginViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val authRepositoryImpl: AuthRepositoryImpl
 ) : ViewModel() {
+    private val _messageBarState: MutableState<MessageBarState> = mutableStateOf(MessageBarState())
+    val messageBarState: State<MessageBarState> = _messageBarState
+
     private val _loading = MutableStateFlow(false)
     val loading = _loading.asStateFlow()
-
-    private val _error = MutableStateFlow("")
-    val error = _error.asStateFlow()
 
     private val _email = MutableStateFlow("")
     val email = _email.asStateFlow()
@@ -53,7 +57,6 @@ class LoginViewModel @Inject constructor(
             _loading.value = true
 
             try {
-                _error.value = ""
                 val result = withContext(Dispatchers.IO) {
                     authRepositoryImpl.login(email.value, password.value)
                 }
@@ -62,7 +65,7 @@ class LoginViewModel @Inject constructor(
                     navigateToHome()
                 }
             } catch (e: Exception) {
-                _error.value = context.getString(R.string.incorrect_email_password)
+                _messageBarState.value = MessageBarState(error = context.getString(R.string.incorrect_email_password))
             }
 
             _loading.value = false

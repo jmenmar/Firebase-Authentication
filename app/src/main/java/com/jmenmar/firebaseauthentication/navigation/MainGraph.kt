@@ -23,8 +23,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.jmenmar.firebaseauthentication.ui.screens.navigation.home.HomeScreen
-import com.jmenmar.firebaseauthentication.ui.screens.navigation.settings.SettingsScreen
+import com.jmenmar.firebaseauthentication.ui.screen.navigation.home.HomeScreen
+import com.jmenmar.firebaseauthentication.ui.screen.navigation.settings.SettingsScreen
 
 @Composable
 fun MainGraph(navController: NavHostController, innerPadding: PaddingValues) {

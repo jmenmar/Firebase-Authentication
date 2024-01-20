@@ -1,4 +1,4 @@
-package com.jmenmar.firebaseauthentication.ui.screens.navigation.home
+package com.jmenmar.firebaseauthentication.ui.screen.navigation.home
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues

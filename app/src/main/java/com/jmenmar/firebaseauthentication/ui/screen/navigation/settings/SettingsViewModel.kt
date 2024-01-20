@@ -1,4 +1,4 @@
-package com.jmenmar.firebaseauthentication.ui.screens.navigation.settings
+package com.jmenmar.firebaseauthentication.ui.screen.navigation.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

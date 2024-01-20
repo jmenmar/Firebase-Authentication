@@ -1,4 +1,4 @@
-package com.jmenmar.firebaseauthentication.ui.screens.forgot
+package com.jmenmar.firebaseauthentication.ui.screen.forgot
 
 import android.util.Patterns
 import androidx.compose.foundation.layout.Arrangement

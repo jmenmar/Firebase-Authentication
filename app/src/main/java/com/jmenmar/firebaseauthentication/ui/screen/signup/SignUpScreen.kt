@@ -1,4 +1,4 @@
-package com.jmenmar.firebaseauthentication.ui.screens.signup
+package com.jmenmar.firebaseauthentication.ui.screen.signup
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

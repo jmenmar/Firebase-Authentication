@@ -2,7 +2,6 @@ package com.jmenmar.firebaseauthentication.ui.screens.forgot
 
 import android.util.Patterns
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -35,12 +34,14 @@ fun ForgotPasswordScreen(
     val email by forgotPasswordViewModel.email.collectAsState()
 
     Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Recuperar contraseña",
+            text = stringResource(id = R.string.forgot_password),
             fontSize = 32.sp,
             fontWeight = FontWeight.Bold
         )
@@ -69,7 +70,7 @@ fun ForgotPasswordScreen(
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            Text(text = "Recuperar contraseña")
+            Text(text = stringResource(id = R.string.reset_password))
         }
     }
 }

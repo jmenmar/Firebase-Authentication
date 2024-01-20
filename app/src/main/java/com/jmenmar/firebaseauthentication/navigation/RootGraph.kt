@@ -6,11 +6,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.google.firebase.auth.FirebaseUser
-import com.jmenmar.firebaseauthentication.data.network.AuthRepo
+import com.jmenmar.firebaseauthentication.data.network.AuthRepositoryImpl
 
 @Composable
 fun RootNavGraph(navController: NavHostController, context: Context) {
-    val authManager = AuthRepo(context)
+    val authManager = AuthRepositoryImpl(context)
     val user: FirebaseUser? = authManager.getCurrentUser()
 
     NavHost(

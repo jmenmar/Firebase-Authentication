@@ -64,12 +64,6 @@ fun LoginScreen(
     val scope = rememberCoroutineScope()
     val auth = loginViewModel.instance
 
-//    LaunchedEffect(key1 = Unit) {
-//        if (loginViewModel.isUserLogged()) {
-//            navigateToHome()
-//        }
-//    }
-
     val googleSignInLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()) { result ->
         when(val account = auth.handleSignInResult(GoogleSignIn.getSignedInAccountFromIntent(result.data))) {

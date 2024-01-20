@@ -1,19 +1,28 @@
 <resources>
-    // GLOBAL
+    // Global
     <string name="app_name">Firebase Authentication</string>
     <string name="default_web_client_id">802785118139-7glf067cc0lg19ho3h6ojind5bc39rtr.apps.googleusercontent.com</string>
 
-    // LOGIN
+    // Login
     <string name="email">Email</string>
     <string name="password">Password</string>
-    <string name="repeat_password">Repeat password</string>
     <string name="login">Login</string>
     <string name="sign_up">Sign up</string>
     <string name="or">Or</string>
     <string name="sign_in_google">Sign in with Google</string>
-    <string name="sign_out">Sign out</string>
     <string name="dont_have_account">Don´t have an account?</string>
     <string name="incorrect_email_password">Incorrect email or password</string>
     <string name="sign_in_successful">"Sign in successful"</string>
     <string name="forgot_password">Forgot password?</string>
+
+    // Sign up
+    <string name="repeat_password">Repeat password</string>
+
+    // Forgot password
+    <string name="reset_password">Reset password</string>
+    <string name="recovery_email_sent">Recovery email sent</string>
+    <string name="an_error_has_occurred">An error has occurred</string>
+
+    // Main
+    <string name="sign_out">Sign out</string>
 </resources>

@@ -4,7 +4,8 @@ import android.content.Context
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jmenmar.firebaseauthentication.data.network.AuthRepo
+import com.jmenmar.firebaseauthentication.R
+import com.jmenmar.firebaseauthentication.data.network.AuthRepositoryImpl
 import com.jmenmar.firebaseauthentication.domain.model.AuthResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -16,7 +17,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ForgotPasswordViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val auth: AuthRepo
+    private val auth: AuthRepositoryImpl
 ) : ViewModel() {
 
     private val _email = MutableStateFlow("")
@@ -30,11 +31,11 @@ class ForgotPasswordViewModel @Inject constructor(
         viewModelScope.launch {
             when(auth.resetPassword(email.value)) {
                 is AuthResponse.Success -> {
-                    Toast.makeText(context, "Correo enviado", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, context.getString(R.string.recovery_email_sent), Toast.LENGTH_SHORT).show()
                     navigateToLogin()
                 }
                 is AuthResponse.Error -> {
-                    Toast.makeText(context, "Error al enviar el correo", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, context.getString(R.string.an_error_has_occurred), Toast.LENGTH_SHORT).show()
                 }
             }
         }

@@ -8,11 +8,10 @@ import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
-class AuthService @Inject constructor(
-    private val firebaseAuth: FirebaseAuth
+class AuthRepositoryImpl @Inject constructor(
+    private val firebaseAuth: FirebaseAuth,
+//    private val context: Context
 ) {
-    private fun getCurrentUser() = firebaseAuth.currentUser
-
     suspend fun login(email: String, password: String): FirebaseUser? {
         return firebaseAuth.signInWithEmailAndPassword(email, password).await().user
     }
@@ -30,11 +29,10 @@ class AuthService @Inject constructor(
         }
     }
 
-    fun isUserLogged(): Boolean {
-        return getCurrentUser() != null
-    }
-
     fun logout() {
         firebaseAuth.signOut()
     }
+
+    val isUserAuthenticated: Boolean = firebaseAuth.currentUser != null
+    val currentUser: FirebaseUser? = firebaseAuth.currentUser
 }

@@ -1,20 +1,30 @@
 package com.jmenmar.firebaseauthentication.ui.navigation
 
+import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.google.firebase.auth.FirebaseUser
+import com.jmenmar.firebaseauthentication.data.network.AuthManager
+import com.jmenmar.firebaseauthentication.data.network.AuthRepo
 
 @Composable
-fun RootNavigationGraph(navController: NavHostController) {
+fun RootNavGraph(navController: NavHostController, context: Context) {
+    val authManager = AuthManager(context)
+    val authRepo = AuthRepo(context)
+
+    val user: FirebaseUser? = authRepo.getCurrentUser()
+
     NavHost(
         navController = navController,
         route = Graph.ROOT,
-        startDestination = Graph.LOGIN
+        startDestination = if(user == null) Graph.LOGIN else Graph.MAIN
     ) {
-        loginGraph(navController = navController)
+        loginGraph(navController = navController, context = context, auth = authRepo)
+
         composable(route = Graph.MAIN) {
-            MainScreen()
+            MainScreen(context = context, auth = authRepo)
         }
     }
 }

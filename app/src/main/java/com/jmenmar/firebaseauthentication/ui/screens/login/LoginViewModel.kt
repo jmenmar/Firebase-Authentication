@@ -3,9 +3,9 @@ package com.jmenmar.firebaseauthentication.ui.screens.login
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavHostController
 import com.jmenmar.firebaseauthentication.R
-import com.jmenmar.firebaseauthentication.data.network.AuthService
+import com.jmenmar.firebaseauthentication.data.network.AuthRepo
+import com.jmenmar.firebaseauthentication.data.network.AuthRepositoryImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -18,7 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val authService: AuthService
+    private val authRepositoryImpl: AuthRepositoryImpl
 ) : ViewModel() {
     private val _loading = MutableStateFlow(false)
     val loading = _loading.asStateFlow()
@@ -41,7 +41,7 @@ class LoginViewModel @Inject constructor(
     }
 
     fun isUserLogged(): Boolean {
-        return authService.isUserLogged()
+        return authRepositoryImpl.isUserAuthenticated
     }
 
     fun login(navigateToHome: () -> Unit) {
@@ -51,7 +51,7 @@ class LoginViewModel @Inject constructor(
             try {
                 _error.value = ""
                 val result = withContext(Dispatchers.IO) {
-                    authService.login(email.value, password.value)
+                    authRepositoryImpl.login(email.value, password.value)
                 }
 
                 if (result != null) {

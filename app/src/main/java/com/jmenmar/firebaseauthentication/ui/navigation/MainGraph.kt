@@ -1,5 +1,6 @@
 package com.jmenmar.firebaseauthentication.ui.navigation
 
+import android.content.Context
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.size
@@ -15,7 +16,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -24,18 +24,19 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.jmenmar.firebaseauthentication.data.network.AuthManager
+import com.jmenmar.firebaseauthentication.data.network.AuthRepo
 import com.jmenmar.firebaseauthentication.ui.screens.navigation.home.HomeScreen
 import com.jmenmar.firebaseauthentication.ui.screens.navigation.settings.SettingsScreen
-import com.jmenmar.firebaseauthentication.ui.screens.navigation.settings.SettingsViewModel
 
 @Composable
-fun MainGraph(navController: NavHostController, innerPadding: PaddingValues) {
+fun MainGraph(navController: NavHostController, innerPadding: PaddingValues, context: Context, auth: AuthRepo) {
     NavHost(
         navController = navController,
         route = Graph.MAIN,
         startDestination = BottomBar.Home.route
     ) {
-        loginGraph(navController = navController)
+        loginGraph(navController = navController, context = context, auth = auth)
 
         composable(route = BottomBar.Home.route) {
             HomeScreen(innerPadding = innerPadding)
@@ -55,11 +56,11 @@ fun MainGraph(navController: NavHostController, innerPadding: PaddingValues) {
 }
 
 @Composable
-fun MainScreen(navController: NavHostController = rememberNavController()) {
+fun MainScreen(navController: NavHostController = rememberNavController(), context: Context, auth: AuthRepo) {
     Scaffold(
         bottomBar = { BottomBar(navController = navController) }
     ) { innerPadding ->
-        MainGraph(navController = navController, innerPadding = innerPadding)
+        MainGraph(navController = navController, innerPadding = innerPadding, context = context, auth = auth)
     }
 }
 

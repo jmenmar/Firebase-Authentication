@@ -1,22 +1,23 @@
 package com.jmenmar.firebaseauthentication.ui.navigation
 
-import androidx.hilt.navigation.compose.hiltViewModel
+import android.content.Context
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import com.jmenmar.firebaseauthentication.data.network.AuthManager
+import com.jmenmar.firebaseauthentication.data.network.AuthRepo
 import com.jmenmar.firebaseauthentication.ui.screens.login.LoginScreen
 import com.jmenmar.firebaseauthentication.ui.screens.signup.SignUpScreen
-import com.jmenmar.firebaseauthentication.ui.screens.login.LoginViewModel
-import com.jmenmar.firebaseauthentication.ui.screens.signup.SignUpViewModel
 
-fun NavGraphBuilder.loginGraph(navController: NavHostController) {
+fun NavGraphBuilder.loginGraph(navController: NavHostController, context: Context, auth: AuthRepo) {
     navigation(
         route = Graph.LOGIN,
         startDestination = AuthScreen.Login.route
     ) {
         composable(route = AuthScreen.Login.route) {
             LoginScreen(
+                auth = auth,
                 navigateToHome = {
                     navController.popBackStack()
                     navController.navigate(Graph.MAIN)

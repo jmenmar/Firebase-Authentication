@@ -38,7 +38,7 @@ class AuthRepositoryImpl @Inject constructor(
             val authResult = firebaseAuth.createUserWithEmailAndPassword(email, password).await()
             AuthResponse.Success(authResult.user)
         } catch(e: Exception) {
-            AuthResponse.Error(e.message ?: "Error al crear el usuario")
+            AuthResponse.Error(e.message ?: context.getString(R.string.error_sign_up))
         }
     }
 
@@ -47,7 +47,7 @@ class AuthRepositoryImpl @Inject constructor(
             val authResult = firebaseAuth.signInWithEmailAndPassword(email, password).await()
             AuthResponse.Success(authResult.user)
         } catch(e: Exception) {
-            AuthResponse.Error(e.message ?: "Error al iniciar sesión")
+            AuthResponse.Error(e.message ?: context.getString(R.string.incorrect_email_password))
         }
     }
 
@@ -56,7 +56,7 @@ class AuthRepositoryImpl @Inject constructor(
             firebaseAuth.sendPasswordResetEmail(email).await()
             AuthResponse.Success(Unit)
         } catch(e: Exception) {
-            AuthResponse.Error(e.message ?: "Error al restablecer la contraseña")
+            AuthResponse.Error(e.message ?: context.getString(R.string.an_error_has_occurred))
         }
     }
 
@@ -74,7 +74,7 @@ class AuthRepositoryImpl @Inject constructor(
             val account = task.getResult(ApiException::class.java)
             AuthResponse.Success(account)
         } catch (e: ApiException) {
-            AuthResponse.Error(e.message ?: "Google sign-in failed.")
+            AuthResponse.Error(e.message ?: context.getString(R.string.an_error_has_occurred))
         }
     }
 
@@ -85,7 +85,7 @@ class AuthRepositoryImpl @Inject constructor(
                 AuthResponse.Success(it)
             } ?: throw Exception("Sign in with Google failed.")
         } catch (e: Exception) {
-            AuthResponse.Error(e.message ?: "Sign in with Google failed.")
+            AuthResponse.Error(e.message ?: context.getString(R.string.an_error_has_occurred))
         }
     }
 

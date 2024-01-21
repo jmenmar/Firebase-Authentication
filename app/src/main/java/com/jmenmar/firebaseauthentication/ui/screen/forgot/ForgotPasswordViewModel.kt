@@ -34,13 +34,13 @@ class ForgotPasswordViewModel @Inject constructor(
 
     fun resetPassword(navigateToLogin: () -> Unit) {
         viewModelScope.launch {
-            when(authRepository.resetPassword(email.value)) {
+            when(val result = authRepository.resetPassword(email.value)) {
                 is AuthResponse.Success -> {
                     _messageBarState.value = MessageBarState(message = context.getString(R.string.recovery_email_sent))
                     navigateToLogin()
                 }
                 is AuthResponse.Error -> {
-                    _messageBarState.value = MessageBarState(error = context.getString(R.string.an_error_has_occurred))
+                    _messageBarState.value = MessageBarState(error = result.errorMessage)
                 }
             }
         }

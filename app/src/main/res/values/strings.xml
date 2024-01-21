@@ -16,6 +16,7 @@
 
     // Sign up
     <string name="repeat_password">Repeat password</string>
+    <string name="error_sign_up">Error on Sign Up</string>
 
     // Forgot password
     <string name="reset_password">Reset password</string>

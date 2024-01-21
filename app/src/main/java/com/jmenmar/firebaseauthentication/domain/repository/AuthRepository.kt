@@ -10,19 +10,19 @@ import com.jmenmar.firebaseauthentication.domain.model.AuthResponse
 
 interface AuthRepository {
 
-    suspend fun signInWithEmailAndPassword(email: String, password: String): AuthResponse<FirebaseUser?>
-
-    suspend fun signUpWithEmailAndPassword(email: String, password: String): AuthResponse<FirebaseUser?>
-
-    suspend fun resetPassword(email: String): AuthResponse<Unit>
-
-    fun signOut()
-
+    // User
     fun getCurrentUser(): FirebaseUser?
 
+    // Email & password
+    suspend fun signInWithEmailAndPassword(email: String, password: String): AuthResponse<FirebaseUser?>
+    suspend fun signUpWithEmailAndPassword(email: String, password: String): AuthResponse<FirebaseUser?>
+    suspend fun resetPassword(email: String): AuthResponse<Unit>
+
+    // Google
     fun handleSignInResult(task: Task<GoogleSignInAccount>): AuthResponse<GoogleSignInAccount>?
-
     suspend fun signInWithGoogleCredential(credential: AuthCredential): AuthResponse<FirebaseUser>?
-
     fun signInWithGoogle(googleSignInLauncher: ActivityResultLauncher<Intent>)
+
+    // Sign out
+    fun signOut()
 }

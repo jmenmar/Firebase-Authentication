@@ -71,7 +71,7 @@ class LoginViewModel @Inject constructor(
                 }
 
                 is AuthResponse.Error -> {
-                    _messageBarState.value = MessageBarState(error = context.getString(R.string.incorrect_email_password))
+                    _messageBarState.value = MessageBarState(error = result.errorMessage)
                 }
             }
 

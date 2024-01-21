@@ -38,6 +38,10 @@ class LoginViewModel @Inject constructor(
 
     val instance = authRepositoryImpl
 
+    fun setMessage(messageBarState: MessageBarState) {
+        _messageBarState.value = messageBarState
+    }
+
     fun setEmail(email: String) {
         _email.value = email
     }

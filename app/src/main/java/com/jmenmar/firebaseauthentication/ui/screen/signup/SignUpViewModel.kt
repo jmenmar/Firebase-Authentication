@@ -1,9 +1,13 @@
 package com.jmenmar.firebaseauthentication.ui.screen.signup
 
 import android.util.Patterns
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jmenmar.firebaseauthentication.data.network.AuthRepositoryImpl
+import com.jmenmar.firebaseauthentication.domain.model.MessageBarState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,6 +20,8 @@ import javax.inject.Inject
 class SignUpViewModel @Inject constructor(
     private val authRepositoryImpl: AuthRepositoryImpl
 ): ViewModel() {
+    private val _messageBarState: MutableState<MessageBarState> = mutableStateOf(MessageBarState())
+    val messageBarState: State<MessageBarState> = _messageBarState
 
     private val _loading = MutableStateFlow(false)
     val loading = _loading.asStateFlow()
@@ -28,9 +34,6 @@ class SignUpViewModel @Inject constructor(
 
     private val _repeatPassword = MutableStateFlow("")
     val repeatPassword = _repeatPassword.asStateFlow()
-
-    private val _error = MutableStateFlow("")
-    val error = _error.asStateFlow()
 
     fun setEmail(username: String) {
         _email.value = username
@@ -57,7 +60,6 @@ class SignUpViewModel @Inject constructor(
 
     fun signUp(navigateToHome:() -> Unit) {
         viewModelScope.launch {
-            _error.value = ""
             _loading.value = true
 
             try {
@@ -70,7 +72,7 @@ class SignUpViewModel @Inject constructor(
                 }
 
             } catch (e: Exception) {
-                _error.value = e.message.orEmpty()
+                _messageBarState.value = MessageBarState(error = e.message ?: "Error")
             }
 
             _loading.value = false

@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.jmenmar.firebaseauthentication.R
+import com.jmenmar.firebaseauthentication.ui.component.MessageBar
 
 @Composable
 fun ForgotPasswordScreen(
@@ -32,45 +33,58 @@ fun ForgotPasswordScreen(
     navigateToLogin: () -> Unit
 ) {
     val email by forgotPasswordViewModel.email.collectAsState()
+    val messageBarState by forgotPasswordViewModel.messageBarState
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
+        modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = stringResource(id = R.string.forgot_password),
-            fontSize = 32.sp,
-            fontWeight = FontWeight.Bold
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        OutlinedTextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = email,
-            label = { Text(text = stringResource(R.string.email)) },
-            maxLines = 1,
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-            onValueChange = { forgotPasswordViewModel.setEmail(it) })
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(
-            enabled = email.isNotEmpty() && Patterns.EMAIL_ADDRESS.matcher(email).matches(),
-            onClick = {
-                forgotPasswordViewModel.resetPassword {
-                    navigateToLogin()
-                }
-            },
-            shape = RoundedCornerShape(12.dp),
-            modifier = Modifier
-                .fillMaxWidth()
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = stringResource(id = R.string.reset_password))
+            MessageBar(messageBarState = messageBarState)
+        }
+
+        Column(
+            modifier = Modifier.weight(9f).padding(16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = stringResource(id = R.string.forgot_password),
+                fontSize = 32.sp,
+                fontWeight = FontWeight.Bold
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            OutlinedTextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = email,
+                label = { Text(text = stringResource(R.string.email)) },
+                maxLines = 1,
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                onValueChange = { forgotPasswordViewModel.setEmail(it) })
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                enabled = email.isNotEmpty() && Patterns.EMAIL_ADDRESS.matcher(email).matches(),
+                onClick = {
+                    forgotPasswordViewModel.resetPassword {
+                        navigateToLogin()
+                    }
+                },
+                shape = RoundedCornerShape(12.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                Text(text = stringResource(id = R.string.reset_password))
+            }
         }
     }
 }

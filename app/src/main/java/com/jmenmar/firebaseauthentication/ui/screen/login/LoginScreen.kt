@@ -1,6 +1,5 @@
 package com.jmenmar.firebaseauthentication.ui.screen.login
 
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -30,7 +29,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -44,6 +42,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.firebase.auth.GoogleAuthProvider
 import com.jmenmar.firebaseauthentication.R
 import com.jmenmar.firebaseauthentication.domain.model.AuthResponse
+import com.jmenmar.firebaseauthentication.domain.model.MessageBarState
 import com.jmenmar.firebaseauthentication.ui.component.MessageBar
 import com.jmenmar.firebaseauthentication.ui.component.SignInGoogleButton
 import kotlinx.coroutines.launch
@@ -58,11 +57,9 @@ fun LoginScreen(
     val loading = loginViewModel.loading.collectAsState()
     val email = loginViewModel.email.collectAsState()
     val password = loginViewModel.password.collectAsState()
-
     val messageBarState by loginViewModel.messageBarState
 
     var passwordVisibility by remember { mutableStateOf(false) }
-    val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val auth = loginViewModel.instance
 
@@ -74,30 +71,29 @@ fun LoginScreen(
                 scope.launch {
                     val fireUser = auth.signInWithGoogleCredential(credential)
                     if (fireUser != null){
-                        Toast.makeText(context, "Bienvenidx", Toast.LENGTH_SHORT).show()
                         navigateToHome()
                     }
                 }
             }
             is AuthResponse.Error -> {
-                Toast.makeText(context, "Error: ${account.errorMessage}", Toast.LENGTH_SHORT).show()
+                loginViewModel.setMessage(MessageBarState(error = "Error: ${account.errorMessage}"))
             }
             else -> {
-                Toast.makeText(context, "Error desconocido", Toast.LENGTH_SHORT).show()
+                loginViewModel.setMessage(MessageBarState(error = "Error"))
             }
         }
     }
 
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         if (loading.value) {
             CircularProgressIndicator()
         } else {
             Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+                modifier = Modifier.weight(1f)
             ) {
                 MessageBar(messageBarState = messageBarState)
             }
@@ -186,11 +182,15 @@ fun LoginScreen(
 
                 SignInGoogleButton(onClick = { auth.signInWithGoogle(googleSignInLauncher) })
 
-                Spacer(modifier = Modifier.weight(1f))
+                Spacer(modifier = Modifier.weight(2f))
 
                 Row (verticalAlignment = Alignment.CenterVertically) {
                     Text(text = stringResource(id = R.string.dont_have_account))
-                    TextButton(onClick = { onClickSignUp() }) {
+                    TextButton(
+                        onClick = {
+                            onClickSignUp()
+                        }
+                    ) {
                         Text(text = stringResource(R.string.sign_up))
                     }
                 }

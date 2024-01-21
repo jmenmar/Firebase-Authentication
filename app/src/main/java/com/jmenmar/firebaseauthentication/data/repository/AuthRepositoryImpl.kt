@@ -1,4 +1,4 @@
-package com.jmenmar.firebaseauthentication.data.network
+package com.jmenmar.firebaseauthentication.data.repository
 
 import android.content.Context
 import android.content.Intent
@@ -17,40 +17,23 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.jmenmar.firebaseauthentication.R
 import com.jmenmar.firebaseauthentication.domain.model.AuthResponse
+import com.jmenmar.firebaseauthentication.domain.repository.AuthRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 
 class AuthRepositoryImpl @Inject constructor(
     @ApplicationContext private val context: Context
-) {
+): AuthRepository {
     private val firebaseAuth: FirebaseAuth by lazy { Firebase.auth }
-
     private val signInClient = Identity.getSignInClient(context)
 
-    // EMAIL & PASSWORD (Mio)
-    suspend fun login(email: String, password: String): FirebaseUser? {
-        return firebaseAuth.signInWithEmailAndPassword(email, password).await().user
-    }
-
-    suspend fun signUp(email: String, password: String): FirebaseUser? {
-        return suspendCancellableCoroutine { cancellableContinuation ->
-            firebaseAuth.createUserWithEmailAndPassword(email, password)
-                .addOnSuccessListener {
-                    val user = it.user
-                    cancellableContinuation.resume(user)
-                }
-                .addOnFailureListener {
-                    cancellableContinuation.resumeWithException(it)
-                }
-        }
+    override fun getCurrentUser(): FirebaseUser? {
+        return firebaseAuth.currentUser
     }
 
     // EMAIL & PASSWORD
-    suspend fun createUserWithEmailAndPassword(email: String, password: String): AuthResponse<FirebaseUser?> {
+    override suspend fun signUpWithEmailAndPassword(email: String, password: String): AuthResponse<FirebaseUser?> {
         return try {
             val authResult = firebaseAuth.createUserWithEmailAndPassword(email, password).await()
             AuthResponse.Success(authResult.user)
@@ -59,7 +42,7 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
-    suspend fun signInWithEmailAndPassword(email: String, password: String): AuthResponse<FirebaseUser?> {
+    override suspend fun signInWithEmailAndPassword(email: String, password: String): AuthResponse<FirebaseUser?> {
         return try {
             val authResult = firebaseAuth.signInWithEmailAndPassword(email, password).await()
             AuthResponse.Success(authResult.user)
@@ -68,7 +51,7 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
-    suspend fun resetPassword(email: String): AuthResponse<Unit> {
+    override suspend fun resetPassword(email: String): AuthResponse<Unit> {
         return try {
             firebaseAuth.sendPasswordResetEmail(email).await()
             AuthResponse.Success(Unit)
@@ -76,17 +59,6 @@ class AuthRepositoryImpl @Inject constructor(
             AuthResponse.Error(e.message ?: "Error al restablecer la contraseña")
         }
     }
-
-    fun signOut() {
-        firebaseAuth.signOut()
-        signInClient.signOut()
-    }
-
-    fun getCurrentUser(): FirebaseUser?{
-        return firebaseAuth.currentUser
-    }
-
-    val isUserAuthenticated: Boolean = firebaseAuth.currentUser != null
 
     // GOOGLE SIGN IN
     private val googleSignInClient: GoogleSignInClient by lazy {
@@ -97,7 +69,7 @@ class AuthRepositoryImpl @Inject constructor(
         GoogleSignIn.getClient(context, gso)
     }
 
-    fun handleSignInResult(task: Task<GoogleSignInAccount>): AuthResponse<GoogleSignInAccount>? {
+    override fun handleSignInResult(task: Task<GoogleSignInAccount>): AuthResponse<GoogleSignInAccount>? {
         return try {
             val account = task.getResult(ApiException::class.java)
             AuthResponse.Success(account)
@@ -106,7 +78,7 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
-    suspend fun signInWithGoogleCredential(credential: AuthCredential): AuthResponse<FirebaseUser>? {
+    override suspend fun signInWithGoogleCredential(credential: AuthCredential): AuthResponse<FirebaseUser>? {
         return try {
             val firebaseUser = firebaseAuth.signInWithCredential(credential).await()
             firebaseUser.user?.let {
@@ -117,8 +89,14 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
-    fun signInWithGoogle(googleSignInLauncher: ActivityResultLauncher<Intent>) {
+    override fun signInWithGoogle(googleSignInLauncher: ActivityResultLauncher<Intent>) {
         val signInIntent = googleSignInClient.signInIntent
         googleSignInLauncher.launch(signInIntent)
+    }
+
+    // SIGN OUT
+    override fun signOut() {
+        firebaseAuth.signOut()
+        signInClient.signOut()
     }
 }

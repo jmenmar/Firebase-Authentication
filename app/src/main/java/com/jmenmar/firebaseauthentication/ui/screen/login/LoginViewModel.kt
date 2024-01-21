@@ -8,8 +8,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jmenmar.firebaseauthentication.R
-import com.jmenmar.firebaseauthentication.data.network.AuthRepositoryImpl
+import com.jmenmar.firebaseauthentication.domain.model.AuthResponse
 import com.jmenmar.firebaseauthentication.domain.model.MessageBarState
+import com.jmenmar.firebaseauthentication.domain.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -22,7 +23,7 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val authRepositoryImpl: AuthRepositoryImpl
+    private val authRepository: AuthRepository
 ) : ViewModel() {
     private val _messageBarState: MutableState<MessageBarState> = mutableStateOf(MessageBarState())
     val messageBarState: State<MessageBarState> = _messageBarState
@@ -36,7 +37,7 @@ class LoginViewModel @Inject constructor(
     private val _password = MutableStateFlow("")
     val password = _password.asStateFlow()
 
-    val instance = authRepositoryImpl
+    val instance = authRepository
 
     fun setMessage(messageBarState: MessageBarState) {
         _messageBarState.value = messageBarState
@@ -60,16 +61,18 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             _loading.value = true
 
-            try {
-                val result = withContext(Dispatchers.IO) {
-                    authRepositoryImpl.login(email.value, password.value)
-                }
+            val result = withContext(Dispatchers.IO) {
+                authRepository.signInWithEmailAndPassword(email.value, password.value)
+            }
 
-                if (result != null) {
+            when (result) {
+                is AuthResponse.Success -> {
                     navigateToHome()
                 }
-            } catch (e: Exception) {
-                _messageBarState.value = MessageBarState(error = context.getString(R.string.incorrect_email_password))
+
+                is AuthResponse.Error -> {
+                    _messageBarState.value = MessageBarState(error = context.getString(R.string.incorrect_email_password))
+                }
             }
 
             _loading.value = false

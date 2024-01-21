@@ -6,7 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.google.firebase.auth.FirebaseUser
-import com.jmenmar.firebaseauthentication.data.network.AuthRepositoryImpl
+import com.jmenmar.firebaseauthentication.data.repository.AuthRepositoryImpl
 
 @Composable
 fun RootNavGraph(navController: NavHostController, context: Context) {

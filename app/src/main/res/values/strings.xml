@@ -12,7 +12,6 @@
     <string name="sign_in_google">Sign in with Google</string>
     <string name="dont_have_account">Don´t have an account?</string>
     <string name="incorrect_email_password">Incorrect email or password</string>
-    <string name="sign_in_successful">"Sign in successful"</string>
     <string name="forgot_password">Forgot password?</string>
 
     // Sign up

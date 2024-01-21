@@ -7,9 +7,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jmenmar.firebaseauthentication.R
-import com.jmenmar.firebaseauthentication.data.network.AuthRepositoryImpl
 import com.jmenmar.firebaseauthentication.domain.model.AuthResponse
 import com.jmenmar.firebaseauthentication.domain.model.MessageBarState
+import com.jmenmar.firebaseauthentication.domain.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +20,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ForgotPasswordViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val auth: AuthRepositoryImpl
+    private val authRepository: AuthRepository
 ) : ViewModel() {
     private val _messageBarState: MutableState<MessageBarState> = mutableStateOf(MessageBarState())
     val messageBarState: State<MessageBarState> = _messageBarState
@@ -34,7 +34,7 @@ class ForgotPasswordViewModel @Inject constructor(
 
     fun resetPassword(navigateToLogin: () -> Unit) {
         viewModelScope.launch {
-            when(auth.resetPassword(email.value)) {
+            when(authRepository.resetPassword(email.value)) {
                 is AuthResponse.Success -> {
                     _messageBarState.value = MessageBarState(message = context.getString(R.string.recovery_email_sent))
                     navigateToLogin()

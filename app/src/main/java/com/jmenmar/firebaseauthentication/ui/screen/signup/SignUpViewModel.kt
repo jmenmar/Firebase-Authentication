@@ -6,8 +6,9 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jmenmar.firebaseauthentication.data.network.AuthRepositoryImpl
+import com.jmenmar.firebaseauthentication.domain.model.AuthResponse
 import com.jmenmar.firebaseauthentication.domain.model.MessageBarState
+import com.jmenmar.firebaseauthentication.domain.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,7 +19,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
-    private val authRepositoryImpl: AuthRepositoryImpl
+    private val authRepository: AuthRepository
 ): ViewModel() {
     private val _messageBarState: MutableState<MessageBarState> = mutableStateOf(MessageBarState())
     val messageBarState: State<MessageBarState> = _messageBarState
@@ -62,17 +63,18 @@ class SignUpViewModel @Inject constructor(
         viewModelScope.launch {
             _loading.value = true
 
-            try {
-                val result = withContext(Dispatchers.IO) {
-                    authRepositoryImpl.signUp(email.value, password.value)
-                }
+            val result = withContext(Dispatchers.IO) {
+                authRepository.signUpWithEmailAndPassword(email.value, password.value)
+            }
 
-                if (result != null) {
+            when (result) {
+                is AuthResponse.Success -> {
                     navigateToHome()
                 }
 
-            } catch (e: Exception) {
-                _messageBarState.value = MessageBarState(error = e.message ?: "Error")
+                is AuthResponse.Error -> {
+                    _messageBarState.value = MessageBarState(error = result.errorMessage)
+                }
             }
 
             _loading.value = false

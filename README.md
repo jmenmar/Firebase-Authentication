@@ -1,4 +1,4 @@
-## 🔥 Firebase Authentication
+# 🔥 Firebase Authentication
 Firebase email & password and Google authentication with Jetpack Compose.
 
 ## Tech stack

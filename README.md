@@ -5,7 +5,7 @@ Firebase email & password and Google authentication with Jetpack Compose.
 - Minimum SDK level 24
 - Kotlin based, Coroutines + Flow for asynchronous.
 - Jetpack Compose
-- MVVM Architecture (View - DataBinding - ViewModel - Model)
+- MVVM Architecture
 
 ## Libraries
 - Firebase

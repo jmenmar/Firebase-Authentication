@@ -42,12 +42,12 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun signInWithEmailAndPassword(email: String, password: String): AuthResponse<FirebaseUser?> {
+    override suspend fun signInWithEmailAndPassword(email: String, password: String): Result<FirebaseUser?> {
         return try {
             val authResult = firebaseAuth.signInWithEmailAndPassword(email, password).await()
-            AuthResponse.Success(authResult.user)
+            Result.success(authResult.user)
         } catch(e: Exception) {
-            AuthResponse.Error(e.message ?: context.getString(R.string.incorrect_email_password))
+            Result.failure(e)
         }
     }
 
@@ -69,23 +69,23 @@ class AuthRepositoryImpl @Inject constructor(
         GoogleSignIn.getClient(context, gso)
     }
 
-    override fun handleSignInResult(task: Task<GoogleSignInAccount>): AuthResponse<GoogleSignInAccount>? {
+    override fun signInWithGoogleResult(task: Task<GoogleSignInAccount>): Result<GoogleSignInAccount> {
         return try {
             val account = task.getResult(ApiException::class.java)
-            AuthResponse.Success(account)
+            Result.success(account)
         } catch (e: ApiException) {
-            AuthResponse.Error(e.message ?: context.getString(R.string.an_error_has_occurred))
+            Result.failure(e)
         }
     }
 
-    override suspend fun signInWithGoogleCredential(credential: AuthCredential): AuthResponse<FirebaseUser>? {
+    override suspend fun signInWithGoogleCredential(credential: AuthCredential): Result<FirebaseUser> {
         return try {
             val firebaseUser = firebaseAuth.signInWithCredential(credential).await()
             firebaseUser.user?.let {
-                AuthResponse.Success(it)
+                Result.success(it)
             } ?: throw Exception("Sign in with Google failed.")
         } catch (e: Exception) {
-            AuthResponse.Error(e.message ?: context.getString(R.string.an_error_has_occurred))
+            Result.failure(e)
         }
     }
 

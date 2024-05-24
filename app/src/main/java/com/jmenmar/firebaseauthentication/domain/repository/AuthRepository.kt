@@ -14,13 +14,13 @@ interface AuthRepository {
     fun getCurrentUser(): FirebaseUser?
 
     // Email & password
-    suspend fun signInWithEmailAndPassword(email: String, password: String): AuthResponse<FirebaseUser?>
+    suspend fun signInWithEmailAndPassword(email: String, password: String): Result<FirebaseUser?>
     suspend fun signUpWithEmailAndPassword(email: String, password: String): AuthResponse<FirebaseUser?>
     suspend fun resetPassword(email: String): AuthResponse<Unit>
 
     // Google
-    fun handleSignInResult(task: Task<GoogleSignInAccount>): AuthResponse<GoogleSignInAccount>?
-    suspend fun signInWithGoogleCredential(credential: AuthCredential): AuthResponse<FirebaseUser>?
+    fun signInWithGoogleResult(task: Task<GoogleSignInAccount>): Result<GoogleSignInAccount>
+    suspend fun signInWithGoogleCredential(credential: AuthCredential): Result<FirebaseUser>
     fun signInWithGoogle(googleSignInLauncher: ActivityResultLauncher<Intent>)
 
     // Sign out

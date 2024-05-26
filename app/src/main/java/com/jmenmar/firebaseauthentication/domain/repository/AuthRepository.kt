@@ -16,7 +16,7 @@ interface AuthRepository {
     // Email & password
     suspend fun signInWithEmailAndPassword(email: String, password: String): Result<FirebaseUser?>
     suspend fun signUpWithEmailAndPassword(email: String, password: String): Result<FirebaseUser?>
-    suspend fun resetPassword(email: String): AuthResponse<Unit>
+    suspend fun resetPassword(email: String): Result<Unit>
 
     // Google
     fun signInWithGoogleResult(task: Task<GoogleSignInAccount>): Result<GoogleSignInAccount>

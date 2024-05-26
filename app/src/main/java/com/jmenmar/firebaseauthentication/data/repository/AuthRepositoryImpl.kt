@@ -16,7 +16,6 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.jmenmar.firebaseauthentication.R
-import com.jmenmar.firebaseauthentication.domain.model.AuthResponse
 import com.jmenmar.firebaseauthentication.domain.repository.AuthRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.tasks.await
@@ -51,12 +50,12 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun resetPassword(email: String): AuthResponse<Unit> {
+    override suspend fun resetPassword(email: String): Result<Unit> {
         return try {
             firebaseAuth.sendPasswordResetEmail(email).await()
-            AuthResponse.Success(Unit)
+            Result.success(Unit)
         } catch(e: Exception) {
-            AuthResponse.Error(e.message ?: context.getString(R.string.an_error_has_occurred))
+            Result.failure(e)
         }
     }
 

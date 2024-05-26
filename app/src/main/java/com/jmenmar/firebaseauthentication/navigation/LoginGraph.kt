@@ -36,7 +36,8 @@ fun NavGraphBuilder.loginGraph(navController: NavHostController) {
                             inclusive = true
                         }
                     }
-                }, onLogin = {
+                },
+                onLogin = {
                     navController.popBackStack()
                 }
             )
@@ -44,7 +45,7 @@ fun NavGraphBuilder.loginGraph(navController: NavHostController) {
 
         composable(route = AuthScreen.Forgot.route) {
             ForgotPasswordScreen(
-                navigateToLogin = {
+                onLogin = {
                     navController.popBackStack()
                     navController.navigate(AuthScreen.Login.route)
                 }

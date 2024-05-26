@@ -1,47 +1,57 @@
 package com.jmenmar.firebaseauthentication.ui.screen.forgot
 
-import android.content.Context
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jmenmar.firebaseauthentication.R
-import com.jmenmar.firebaseauthentication.domain.model.AuthResponse
-import com.jmenmar.firebaseauthentication.domain.model.MessageBarState
-import com.jmenmar.firebaseauthentication.domain.repository.AuthRepository
+import com.jmenmar.firebaseauthentication.domain.usecase.ForgotUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class ForgotPasswordViewModel @Inject constructor(
-    @ApplicationContext private val context: Context,
-    private val authRepository: AuthRepository
+    private val forgotUseCases: ForgotUseCases
 ) : ViewModel() {
-    private val _messageBarState: MutableState<MessageBarState> = mutableStateOf(MessageBarState())
-    val messageBarState: State<MessageBarState> = _messageBarState
+    var state by mutableStateOf(ForgotState())
+        private set
 
-    private val _email = MutableStateFlow("")
-    val email = _email.asStateFlow()
+    fun onEvent(event: ForgotEvent) {
+        when(event) {
+            is ForgotEvent.EmailChange -> {
+                state = state.copy(email = event.email)
+            }
+            ForgotEvent.Recover -> {
+                resetPassword()
+            }
 
-    fun setEmail(email: String) {
-        _email.value = email
+            ForgotEvent.Login -> {
+                state = state.copy(
+                    logIn = true
+                )
+            }
+        }
     }
 
-    fun resetPassword(navigateToLogin: () -> Unit) {
-        viewModelScope.launch {
-            when(val result = authRepository.resetPassword(email.value)) {
-                is AuthResponse.Success -> {
-                    _messageBarState.value = MessageBarState(message = context.getString(R.string.recovery_email_sent))
-                    navigateToLogin()
+    private fun resetPassword() {
+        state = state.copy(emailError = null)
+
+        if (!forgotUseCases.validateEmailUseCase(state.email)) {
+            state = state.copy(
+                emailError = "Invalid email"
+            )
+        }
+
+        if (state.emailError == null) {
+            state = state.copy(isLoading = true)
+            viewModelScope.launch {
+                forgotUseCases.resetPasswordUseCase(email = state.email).onSuccess {
+                    state = state.copy(recover = true)
+                }.onFailure {
+                    state = state.copy(emailError = it.message)
                 }
-                is AuthResponse.Error -> {
-                    _messageBarState.value = MessageBarState(error = result.errorMessage)
-                }
+                state = state.copy(isLoading = false)
             }
         }
     }

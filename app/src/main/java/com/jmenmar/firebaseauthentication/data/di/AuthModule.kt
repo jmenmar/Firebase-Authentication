@@ -6,11 +6,13 @@ import com.jmenmar.firebaseauthentication.data.repository.AuthRepositoryImpl
 import com.jmenmar.firebaseauthentication.data.repository.EmailMatcherImpl
 import com.jmenmar.firebaseauthentication.domain.matcher.EmailMatcher
 import com.jmenmar.firebaseauthentication.domain.repository.AuthRepository
+import com.jmenmar.firebaseauthentication.domain.usecase.ForgotUseCases
 import com.jmenmar.firebaseauthentication.domain.usecase.LoginUseCases
 import com.jmenmar.firebaseauthentication.domain.usecase.LoginWithEmailUseCase
 import com.jmenmar.firebaseauthentication.domain.usecase.LoginWithGoogleCredential
 import com.jmenmar.firebaseauthentication.domain.usecase.LoginWithGoogleLauncherUseCase
 import com.jmenmar.firebaseauthentication.domain.usecase.LoginWithGoogleResultUseCase
+import com.jmenmar.firebaseauthentication.domain.usecase.ResetPasswordUseCase
 import com.jmenmar.firebaseauthentication.domain.usecase.SignupUseCases
 import com.jmenmar.firebaseauthentication.domain.usecase.SignupWithEmailUseCase
 import com.jmenmar.firebaseauthentication.domain.usecase.ValidateEmailUseCase
@@ -24,7 +26,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object AppModule {
+object AuthModule {
 
     @Singleton
     @Provides
@@ -66,6 +68,18 @@ object AppModule {
                 emailMatcher
             ),
             validatePasswordUseCase = ValidatePasswordUseCase()
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideForgotUseCases(
+        repository: AuthRepository,
+        emailMatcher: EmailMatcher
+    ): ForgotUseCases {
+        return ForgotUseCases(
+            resetPasswordUseCase = ResetPasswordUseCase(repository),
+            validateEmailUseCase = ValidateEmailUseCase(emailMatcher)
         )
     }
 

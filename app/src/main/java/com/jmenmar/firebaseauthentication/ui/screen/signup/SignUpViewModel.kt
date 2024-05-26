@@ -1,18 +1,22 @@
 package com.jmenmar.firebaseauthentication.ui.screen.signup
 
+import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.jmenmar.firebaseauthentication.R
 import com.jmenmar.firebaseauthentication.domain.usecase.SignupUseCases
 import com.jmenmar.firebaseauthentication.ui.util.PasswordErrorParser
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val signupUseCases: SignupUseCases
 ): ViewModel() {
     var state by mutableStateOf(SignUpState())
@@ -53,7 +57,7 @@ class SignUpViewModel @Inject constructor(
         )
         if (!signupUseCases.validateEmailUseCase(state.email)) {
             state = state.copy(
-                emailError = "Invalid email"
+                emailError = context.getString(R.string.invalid_email)
             )
         }
 
@@ -63,7 +67,7 @@ class SignUpViewModel @Inject constructor(
         )
         if (state.password != state.repeatPassword) {
             state = state.copy(
-                passwordError = "Passwords do not match"
+                passwordError = context.getString(R.string.passwords_not_match)
             )
         }
 

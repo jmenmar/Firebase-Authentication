@@ -1,17 +1,21 @@
 package com.jmenmar.firebaseauthentication.ui.screen.forgot
 
+import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.jmenmar.firebaseauthentication.R
 import com.jmenmar.firebaseauthentication.domain.usecase.ForgotUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class ForgotPasswordViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val forgotUseCases: ForgotUseCases
 ) : ViewModel() {
     var state by mutableStateOf(ForgotState())
@@ -39,7 +43,7 @@ class ForgotPasswordViewModel @Inject constructor(
 
         if (!forgotUseCases.validateEmailUseCase(state.email)) {
             state = state.copy(
-                emailError = "Invalid email"
+                emailError = context.getString(R.string.invalid_email)
             )
         }
 

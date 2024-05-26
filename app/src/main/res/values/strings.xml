@@ -13,10 +13,12 @@
     <string name="dont_have_account">Don´t have an account?</string>
     <string name="incorrect_email_password">Incorrect email or password</string>
     <string name="forgot_password">Forgot password?</string>
+    <string name="invalid_email">Invalid email</string>
 
     // Sign up
     <string name="repeat_password">Repeat password</string>
     <string name="error_sign_up">Error on Sign Up</string>
+    <string name="passwords_not_match">Passwords do not match</string>
 
     // Forgot password
     <string name="reset_password">Reset password</string>

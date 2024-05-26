@@ -1,5 +1,6 @@
 package com.jmenmar.firebaseauthentication.ui.screen.login
 
+import android.content.Context
 import android.content.Intent
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.result.ActivityResult
@@ -10,15 +11,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.firebase.auth.GoogleAuthProvider
+import com.jmenmar.firebaseauthentication.R
 import com.jmenmar.firebaseauthentication.domain.usecase.LoginUseCases
 import com.jmenmar.firebaseauthentication.ui.util.PasswordErrorParser
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val loginUseCases: LoginUseCases
 ) : ViewModel() {
     var state by mutableStateOf(LoginState())
@@ -45,7 +49,7 @@ class LoginViewModel @Inject constructor(
         )
         if (!loginUseCases.validateEmailUseCase(state.email)) {
             state = state.copy(
-                emailError = "Invalid email"
+                emailError = context.getString(R.string.invalid_email)
             )
         }
         val passwordResult = loginUseCases.validatePasswordUseCase(state.password)

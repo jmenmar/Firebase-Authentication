@@ -15,7 +15,7 @@ interface AuthRepository {
 
     // Email & password
     suspend fun signInWithEmailAndPassword(email: String, password: String): Result<FirebaseUser?>
-    suspend fun signUpWithEmailAndPassword(email: String, password: String): AuthResponse<FirebaseUser?>
+    suspend fun signUpWithEmailAndPassword(email: String, password: String): Result<FirebaseUser?>
     suspend fun resetPassword(email: String): AuthResponse<Unit>
 
     // Google

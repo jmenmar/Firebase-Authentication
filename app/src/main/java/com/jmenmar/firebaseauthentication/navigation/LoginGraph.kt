@@ -30,9 +30,14 @@ fun NavGraphBuilder.loginGraph(navController: NavHostController) {
 
         composable(route = AuthScreen.SignUp.route) {
             SignUpScreen(
-                navigateToHome = {
+                onSignIn = {
+                    navController.navigate(Graph.MAIN) {
+                        popUpTo(navController.graph.id) {
+                            inclusive = true
+                        }
+                    }
+                }, onLogin = {
                     navController.popBackStack()
-                    navController.navigate(Graph.MAIN)
                 }
             )
         }

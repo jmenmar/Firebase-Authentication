@@ -1,83 +1,90 @@
 package com.jmenmar.firebaseauthentication.ui.screen.signup
 
-import android.util.Patterns
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jmenmar.firebaseauthentication.domain.model.AuthResponse
-import com.jmenmar.firebaseauthentication.domain.model.MessageBarState
-import com.jmenmar.firebaseauthentication.domain.repository.AuthRepository
+import com.jmenmar.firebaseauthentication.domain.usecase.SignupUseCases
+import com.jmenmar.firebaseauthentication.ui.util.PasswordErrorParser
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
-    private val authRepository: AuthRepository
+    private val signupUseCases: SignupUseCases
 ): ViewModel() {
-    private val _messageBarState: MutableState<MessageBarState> = mutableStateOf(MessageBarState())
-    val messageBarState: State<MessageBarState> = _messageBarState
+    var state by mutableStateOf(SignUpState())
+        private set
 
-    private val _loading = MutableStateFlow(false)
-    val loading = _loading.asStateFlow()
-
-    private val _email = MutableStateFlow("")
-    val email = _email.asStateFlow()
-
-    private val _password = MutableStateFlow("")
-    val password = _password.asStateFlow()
-
-    private val _repeatPassword = MutableStateFlow("")
-    val repeatPassword = _repeatPassword.asStateFlow()
-
-    fun setEmail(username: String) {
-        _email.value = username
-    }
-
-    fun setPassword(pass: String) {
-        _password.value = pass
-    }
-
-    fun setRepeatPassword(pass: String) {
-        _repeatPassword.value = pass
-    }
-
-    fun isValidForm(): Boolean {
-        return email.value.isNotEmpty() &&
-                password.value.isNotEmpty() &&
-                Patterns.EMAIL_ADDRESS.matcher(email.value).matches() &&
-                passwordsMatch()
-    }
-
-    fun passwordsMatch(): Boolean {
-        return password.value == repeatPassword.value
-    }
-
-    fun signUp(navigateToHome:() -> Unit) {
-        viewModelScope.launch {
-            _loading.value = true
-
-            val result = withContext(Dispatchers.IO) {
-                authRepository.signUpWithEmailAndPassword(email.value, password.value)
+    fun onEvent(event: SignUpEvent) {
+        when (event) {
+            is SignUpEvent.EmailChange -> {
+                state = state.copy(
+                    email = event.email
+                )
             }
-
-            when (result) {
-                is AuthResponse.Success -> {
-                    navigateToHome()
-                }
-
-                is AuthResponse.Error -> {
-                    _messageBarState.value = MessageBarState(error = result.errorMessage)
-                }
+            is SignUpEvent.PasswordChange -> {
+                state = state.copy(
+                    password = event.password
+                )
             }
+            is SignUpEvent.RepeatPasswordChange -> {
+                state = state.copy(
+                    repeatPassword = event.repeatPassword
+                )
+            }
+            SignUpEvent.LogIn -> {
+                state = state.copy(
+                    logIn = true
+                )
+            }
+            SignUpEvent.SignUp -> {
+                signUp()
+            }
+        }
+    }
 
-            _loading.value = false
+    private fun signUp() {
+        state = state.copy(
+            emailError = null,
+            passwordError = null
+        )
+        if (!signupUseCases.validateEmailUseCase(state.email)) {
+            state = state.copy(
+                emailError = "Invalid email"
+            )
+        }
+
+        val passwordResult = signupUseCases.validatePasswordUseCase(state.password)
+        state = state.copy(
+            passwordError = PasswordErrorParser.parseError(passwordResult)
+        )
+        if (state.password != state.repeatPassword) {
+            state = state.copy(
+                passwordError = "Passwords do not match"
+            )
+        }
+
+        if (state.emailError == null && state.passwordError == null) {
+            state = state.copy(
+                isLoading = true
+            )
+            viewModelScope.launch {
+                signupUseCases.signupWithEmailUseCase(state.email, state.password).onSuccess {
+                    state = state.copy(
+                        isSignedIn = true
+                    )
+                }.onFailure {
+                    state = state.copy(
+                        emailError = it.message
+                    )
+                }
+                state = state.copy(
+                    isLoading = false
+                )
+            }
         }
     }
 }

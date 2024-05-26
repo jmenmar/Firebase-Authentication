@@ -33,12 +33,12 @@ class AuthRepositoryImpl @Inject constructor(
     }
 
     // EMAIL & PASSWORD
-    override suspend fun signUpWithEmailAndPassword(email: String, password: String): AuthResponse<FirebaseUser?> {
+    override suspend fun signUpWithEmailAndPassword(email: String, password: String): Result<FirebaseUser?> {
         return try {
             val authResult = firebaseAuth.createUserWithEmailAndPassword(email, password).await()
-            AuthResponse.Success(authResult.user)
+            Result.success(authResult.user)
         } catch(e: Exception) {
-            AuthResponse.Error(e.message ?: context.getString(R.string.error_sign_up))
+            Result.failure(e)
         }
     }
 

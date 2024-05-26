@@ -37,6 +37,7 @@ fun CustomPasswordTextField(
     contentDescription: String,
     modifier: Modifier = Modifier,
     placeholder: String = "Password",
+    isError: Boolean = false,
     errorMessage: String? = null,
     leadingIcon: ImageVector? = Icons.Outlined.Lock,
     isEnabled: Boolean = true,
@@ -48,6 +49,7 @@ fun CustomPasswordTextField(
         onValueChange = onValueChange,
         placeholder = placeholder,
         modifier = modifier,
+        isError = isError,
         errorMessage = errorMessage,
         leadingIcon = leadingIcon,
         isPassword = true,
@@ -65,6 +67,7 @@ fun CustomTextField(
     placeholder: String,
     contentDescription: String,
     modifier: Modifier = Modifier,
+    isError: Boolean = false,
     errorMessage: String? = null,
     leadingIcon: ImageVector? = null,
     isPassword: Boolean = false,
@@ -90,7 +93,7 @@ fun CustomTextField(
                 }
             },
             enabled = isEnabled,
-            isError = errorMessage != null,
+            isError = isError,
             trailingIcon = {
                 if (isPassword) {
                     TextButton(

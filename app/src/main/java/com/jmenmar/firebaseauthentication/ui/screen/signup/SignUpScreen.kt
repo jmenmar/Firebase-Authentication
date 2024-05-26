@@ -1,54 +1,55 @@
 package com.jmenmar.firebaseauthentication.ui.screen.signup
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.jmenmar.firebaseauthentication.R
-import com.jmenmar.firebaseauthentication.ui.component.MessageBar
+import com.jmenmar.firebaseauthentication.ui.screen.signup.components.SignUpForm
 
 @Composable
 fun SignUpScreen(
     signUpViewModel: SignUpViewModel = hiltViewModel(),
-    navigateToHome: () -> Unit
+    onSignIn: () -> Unit,
+    onLogin: () -> Unit,
 ) {
-    val loading = signUpViewModel.loading.collectAsState()
-    val email = signUpViewModel.email.collectAsState()
-    val password = signUpViewModel.password.collectAsState()
-    val repeatPassword = signUpViewModel.repeatPassword.collectAsState()
-    val messageBarState by signUpViewModel.messageBarState
+    val state = signUpViewModel.state
 
-    Column(
+    LaunchedEffect(state.isSignedIn) {
+        if (state.isSignedIn) {
+            onSignIn()
+        }
+    }
+
+    LaunchedEffect(state.logIn) {
+        if (state.logIn) {
+            onLogin()
+        }
+    }
+
+    Box(
         modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+        contentAlignment = Alignment.Center
     ) {
-        if (loading.value) {
+        if (state.isLoading) {
             CircularProgressIndicator()
         } else {
             Column(
-                modifier = Modifier.weight(9f).padding(16.dp),
+                modifier = Modifier.fillMaxSize().padding(16.dp),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -58,64 +59,9 @@ fun SignUpScreen(
                     fontWeight = FontWeight.Bold
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(32.dp))
 
-                OutlinedTextField(
-                    value = email.value,
-                    label = { Text(text = stringResource(R.string.email)) },
-                    maxLines = 1,
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                    onValueChange = { signUpViewModel.setEmail(it) })
-
-                Spacer(modifier = Modifier.height(4.dp))
-
-                OutlinedTextField(
-                    value = password.value,
-                    label = { Text(text = stringResource(R.string.password)) },
-                    maxLines = 1,
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                    visualTransformation = PasswordVisualTransformation(),
-                    onValueChange = { signUpViewModel.setPassword(it) },
-                )
-
-                Spacer(modifier = Modifier.height(4.dp))
-
-                OutlinedTextField(
-                    value = repeatPassword.value,
-                    label = { Text(text = stringResource(R.string.repeat_password)) },
-                    maxLines = 1,
-                    singleLine = true,
-                    isError = !signUpViewModel.passwordsMatch(),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                    visualTransformation = PasswordVisualTransformation(),
-                    onValueChange = { signUpViewModel.setRepeatPassword(it) },
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Button(
-                    enabled = signUpViewModel.isValidForm(),
-                    onClick = {
-                        signUpViewModel.signUp {
-                            navigateToHome()
-                        }
-                    },
-                    shape = RoundedCornerShape(12.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(text = stringResource(R.string.sign_up))
-                }
-
-            }
-
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                MessageBar(messageBarState = messageBarState)
+                SignUpForm(state, signUpViewModel::onEvent)
             }
         }
     }

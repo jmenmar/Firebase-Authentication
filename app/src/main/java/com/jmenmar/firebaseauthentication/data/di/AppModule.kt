@@ -11,6 +11,8 @@ import com.jmenmar.firebaseauthentication.domain.usecase.LoginWithEmailUseCase
 import com.jmenmar.firebaseauthentication.domain.usecase.LoginWithGoogleCredential
 import com.jmenmar.firebaseauthentication.domain.usecase.LoginWithGoogleLauncherUseCase
 import com.jmenmar.firebaseauthentication.domain.usecase.LoginWithGoogleResultUseCase
+import com.jmenmar.firebaseauthentication.domain.usecase.SignupUseCases
+import com.jmenmar.firebaseauthentication.domain.usecase.SignupWithEmailUseCase
 import com.jmenmar.firebaseauthentication.domain.usecase.ValidateEmailUseCase
 import com.jmenmar.firebaseauthentication.domain.usecase.ValidatePasswordUseCase
 import dagger.Module
@@ -47,6 +49,23 @@ object AppModule {
             loginWithGoogleLauncherUseCase = LoginWithGoogleLauncherUseCase(repository),
             loginWithGoogleResultUseCase = LoginWithGoogleResultUseCase(repository),
             loginWithGoogleCredential = LoginWithGoogleCredential(repository)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideSignupUseCases(
+        repository: AuthRepository,
+        emailMatcher: EmailMatcher
+    ): SignupUseCases {
+        return SignupUseCases(
+            signupWithEmailUseCase = SignupWithEmailUseCase(
+                repository
+            ),
+            validateEmailUseCase = ValidateEmailUseCase(
+                emailMatcher
+            ),
+            validatePasswordUseCase = ValidatePasswordUseCase()
         )
     }
 
